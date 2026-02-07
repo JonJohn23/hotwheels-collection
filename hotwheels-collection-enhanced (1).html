@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hot Wheels Collection - Enhanced</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Righteous&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --flame-orange: #FF4500;
+            --racing-red: #E01E37;
+            --speed-yellow: #FFD700;
+            --chrome-silver: #C0C0C0;
+            --track-gray: #2A2A2A;
+            --asphalt: #1A1A1A;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: linear-gradient(135deg, var(--asphalt) 0%, var(--track-gray) 100%);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 4px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .app-container {
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            background: linear-gradient(90deg, var(--racing-red) 0%, var(--flame-orange) 100%);
+            padding: 2rem 2rem 3rem;
+            box-shadow: 0 10px 40px rgba(255, 69, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 20px,
+                    rgba(255, 255, 255, 0.05) 20px,
+                    rgba(255, 255, 255, 0.05) 40px);
+            animation: slideStripes 20s linear infinite;
+        }
+
+        @keyframes slideStripes {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(40px);
+            }
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 4.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            position: relative;
+            text-shadow:
+                3px 3px 0px rgba(0, 0, 0, 0.4),
+                6px 6px 0px rgba(0, 0, 0, 0.2);
+            animation: revEngine 2s ease-in-out;
+        }
+
+        @keyframes revEngine {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .tagline {
+            text-align: center;
+            font-size: 1.1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.95;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab-navigation {
+            display: flex;
+            gap: 1rem;
+            padding: 0 2rem;
+            margin-top: -1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .tab-button {
+            font-family: 'Righteous', sans-serif;
+            padding: 1rem 2rem;
+            background: rgba(26, 26, 26, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px 12px 0 0;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tab-button:hover {
+            border-color: var(--flame-orange);
+            background: rgba(42, 42, 42, 0.8);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(135deg, var(--flame-orange) 0%, var(--racing-red) 100%);
+            border-color: transparent;
+            box-shadow: 0 -5px 20px rgba(255, 69, 0, 0.3);
+        }
+
+        .section-container {
+            background: rgba(42, 42, 42, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            margin: 0 2rem 2rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 69, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-family: 'Righteous', sans-serif;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--speed-yellow);
+        }
+
+        input,
+        select,
+        textarea {
+            background: rgba(26, 26, 26, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--flame-orange);
+            box-shadow: 0 0 0 3px rgba(255, 69, 0, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .image-upload {
+            position: relative;
+            border: 3px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(26, 26, 26, 0.4);
+        }
+
+        .image-upload:hover {
+            border-color: var(--flame-orange);
+            background: rgba(255, 69, 0, 0.1);
+        }
+
+        .image-upload input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin: 1rem auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .btn {
+            font-family: 'Righteous', sans-serif;
+            background: linear-gradient(135deg, var(--flame-orange) 0%, var(--racing-red) 100%);
+            color: var(--white);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 69, 0, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-filter-section {
+            padding: 0 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input,
+        .search-bar select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            padding: 0 2rem 4rem;
+        }
+
+        .car-card {
+            background: linear-gradient(135deg, rgba(42, 42, 42, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            border: 2px solid transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            animation: cardSlideIn 0.6s ease-out backwards;
+        }
+
+        @keyframes cardSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .car-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--flame-orange);
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.7),
+                0 0 0 4px rgba(255, 69, 0, 0.2);
+        }
+
+        .car-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg,
+                    var(--racing-red) 0%,
+                    var(--flame-orange) 50%,
+                    var(--speed-yellow) 100%);
+        }
+
+        .owned-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--speed-yellow);
+            color: var(--asphalt);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+        }
+
+        .car-image-container {
+            position: relative;
+            height: 240px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.6) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .car-image-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: linear-gradient(to top, rgba(26, 26, 26, 0.8), transparent);
+            pointer-events: none;
+        }
+
+        .car-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+            transition: transform 0.4s ease;
+        }
+
+        .car-card:hover .car-image {
+            transform: scale(1.1) rotate(2deg);
+        }
+
+        .car-info {
+            padding: 1.5rem;
+        }
+
+        .car-name {
+            font-family: 'Righteous', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--speed-yellow);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .car-series {
+            font-size: 0.9rem;
+            color: var(--chrome-silver);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .car-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .car-detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .car-detail-label {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.2rem;
+        }
+
+        .car-detail-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--white);
+        }
+
+        .car-notes {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 0.6rem;
+            font-size: 0.85rem;
+            font-family: 'Righteous', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-edit {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: var(--white);
+        }
+
+        .btn-edit:hover {
+            background: linear-gradient(135deg, #5BA3F5 0%, #4A90E2 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #E74C3C 0%, #C0392B 100%);
+            color: var(--white);
+        }
+
+        .btn-delete:hover {
+            background: linear-gradient(135deg, #F55C4C 0%, #E74C3C 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+        .btn-add {
+            background: linear-gradient(135deg, #27AE60 0%, #229954 100%);
+            color: var(--white);
+        }
+
+        .btn-add:hover {
+            background: linear-gradient(135deg, #2ECC71 0%, #27AE60 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            padding: 1.5rem 2rem;
+            background: rgba(26, 26, 26, 0.4);
+            margin: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            color: var(--speed-yellow);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .import-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-box {
+            background: rgba(74, 144, 226, 0.1);
+            border: 2px solid rgba(74, 144, 226, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box h3 {
+            font-family: 'Righteous', sans-serif;
+            color: #5BA3F5;
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .info-box ul {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+
+        .toggle-checkbox {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-checkbox input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.2);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked+.toggle-slider {
+            background-color: var(--flame-orange);
+        }
+
+        input:checked+.toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+
+            .collection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .tab-navigation {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Sample Hot Wheels database
+        const SAMPLE_DATABASE = [
+  {
+    "id": "hw-1770432928129-0",
+    "name": "'68 Plymouth Barracuda Formula S",
+    "series": "Multipack Exclusive",
+    "year": "2026",
+    "color": "Blue Metalflake",
+    "manufacturer": "Mattel",
+    "category": "Multipack Exclusive",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/b04f3753-2252-494b-8271-cacd61e65c76_small.jpg",
+    "notes": "Multi-pack Exclusive"
+  },
+  {
+    "id": "hw-1770432928129-1",
+    "name": "'98 Honda Prelude",
+    "series": "Factory Fresh",
+    "year": "2026",
+    "color": "Black",
+    "manufacturer": "Mattel",
+    "category": "Factory Fresh",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/13f603b6-29e0-4095-b102-1d895a97f6fa_small.jpg",
+    "notes": "Silver Red"
+  },
+  {
+    "id": "hw-1770432928129-2",
+    "name": "'06 Pontiac GTO",
+    "series": "Hot Wheels Silver Series - Pontiac 100th Anniversary",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "Hot Wheels Silver Series - Pontiac 100th Anniversary",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/e9e25c69-a0c4-4ca0-b16c-6c82552aa34d_small.png",
+    "notes": "Detailed Headlights And Taillights"
+  },
+  {
+    "id": "hw-1770432928129-3",
+    "name": "'07 Honda S2000",
+    "series": "Mattel Brick Shop",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "Mattel Brick Shop",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/f573d7f3-128a-4891-af69-b94372b3058d_small.jpg",
+    "notes": "Included With '07 Honda S2000 Building Set, Honda S2000 On Base"
+  },
+  {
+    "id": "hw-1770432928129-4",
+    "name": "'12 Acura NSX Concept",
+    "series": "Multipack Exclusive",
+    "year": "2026",
+    "color": "Red Satin",
+    "manufacturer": "Mattel",
+    "category": "Multipack Exclusive",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/dff09043-cce4-4049-b613-6b3bb68bf163_small.jpg",
+    "notes": "Multi-pack Exclusive"
+  },
+  {
+    "id": "hw-1770432928129-5",
+    "name": "'12 Ford Fiesta",
+    "series": "Hot Wheels Silver Series - Compact Kings",
+    "year": "2026",
+    "color": "Red",
+    "manufacturer": "Mattel",
+    "category": "Hot Wheels Silver Series - Compact Kings",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/206b5d06-c33d-49dc-a54f-56fedef859c7_small.png",
+    "notes": "Detailed Taillights, White Decals, Various Logos, Sparco"
+  },
+  {
+    "id": "hw-1770432928129-6",
+    "name": "'14 Corvette Stingray Convertible",
+    "series": "Multipack Exclusive",
+    "year": "2026",
+    "color": "White",
+    "manufacturer": "Mattel",
+    "category": "Multipack Exclusive",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/3df01074-9534-4526-8bc7-7e0ca1834e3c_small.jpg",
+    "notes": "Multi-pack Exclusive. Malaysia base. Also made in Indonesia"
+  },
+  {
+    "id": "hw-1770432928129-7",
+    "name": "'15 Mazda MX-5 Miata",
+    "series": "Hot Wheels Silver Series - Compact Kings",
+    "year": "2026",
+    "color": "Dark Orange",
+    "manufacturer": "Mattel",
+    "category": "Hot Wheels Silver Series - Compact Kings",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/9db08f93-eb53-4e16-a27d-2c23d86f6c9e_small.png",
+    "notes": "Detailed Headlights And Taillights, GReddy Logo On Sides"
+  },
+  {
+    "id": "hw-1770432928129-8",
+    "name": "'16 Cadillac ATS-V R",
+    "series": "Nightspeed",
+    "year": "2026",
+    "color": "Met Orange",
+    "manufacturer": "Mattel",
+    "category": "Nightspeed",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/07623217-2c4d-4be3-8e2e-6ff85a7f811f_small.jpg",
+    "notes": "International Card"
+  },
+  {
+    "id": "hw-1770432928129-9",
+    "name": "'16 Lamborghini Centenario Roadster",
+    "series": "Exoticars",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "Exoticars",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/fe264ba6-b285-4ad7-8235-411125a6e015_small.png",
+    "notes": "International Card"
+  },
+  {
+    "id": "hw-1770432928129-10",
+    "name": "'16 Lamborghini Centenario Roadster",
+    "series": "Exoticars",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "Exoticars",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/6da4719a-ce5b-4780-9b25-22721cad7950_small.jpg",
+    "notes": "International Short Card, '16 Lamborghini Centenario Cabriolet Décapotable"
+  },
+  {
+    "id": "hw-1770432928129-11",
+    "name": "'16 Lamborghini Centenario Roadster",
+    "series": "Exoticars",
+    "year": "2026",
+    "color": "Yellow Giallo Orion",
+    "manufacturer": "Mattel",
+    "category": "Exoticars",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/549108b8-ad8d-4aed-b65e-c31616559d0c_small.jpg",
+    "notes": "USA Card"
+  },
+  {
+    "id": "hw-1770432928129-12",
+    "name": "'16 Lamborghini Centenario Roadster",
+    "series": "Exoticars",
+    "year": "2026",
+    "color": "Lime",
+    "manufacturer": "Mattel",
+    "category": "Exoticars",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/dd0f70bf-cfcc-4a24-9e59-f6c6598eb4f9_small.jpg",
+    "notes": "White Black Gold Red"
+  },
+  {
+    "id": "hw-1770432928129-13",
+    "name": "'17 Audi RS 6 Avant",
+    "series": "HW Euro",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "HW Euro",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/835ae6f4-c6b2-4c09-bc0f-831697dd899a_small.JPEG",
+    "notes": "International Short Card"
+  },
+  {
+    "id": "hw-1770432928129-14",
+    "name": "'17 Audi RS 6 Avant",
+    "series": "HW Euro",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "HW Euro",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/43a08cd1-4760-4ac9-abb5-d6992de568c2_small.jpg",
+    "notes": "USA Card"
+  },
+  {
+    "id": "hw-1770432928129-15",
+    "name": "'17 Audi RS 6 Avant",
+    "series": "HW Euro",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "HW Euro",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/a840ec44-7e31-4d80-a23d-945537124cd5_small.jpg",
+    "notes": "International Card"
+  },
+  {
+    "id": "hw-1770432928129-16",
+    "name": "'17 Pagani Huayra Roadster",
+    "series": "Exoticars",
+    "year": "2026",
+    "color": "met green",
+    "manufacturer": "Mattel",
+    "category": "Exoticars",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/2ad1760f-e7a2-4119-b148-e1c3e25ac036_small.jpg",
+    "notes": "black gold"
+  },
+  {
+    "id": "hw-1770432928129-17",
+    "name": "'20 Dodge Charger Hellcat",
+    "series": "Nightspeed",
+    "year": "2026",
+    "color": "Gray",
+    "manufacturer": "Mattel",
+    "category": "Nightspeed",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/bce64e81-6060-4776-83a3-e6abe95a558a_small.jpg",
+    "notes": "Black White Light Blue"
+  },
+  {
+    "id": "hw-1770432928129-18",
+    "name": "'20 Jeep Gladiator",
+    "series": "Truckin' Along",
+    "year": "2026",
+    "color": "Lime",
+    "manufacturer": "Mattel",
+    "category": "Truckin' Along",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/e4c02796-4129-4597-9162-c2bf51fbc6d5_small.jpg",
+    "notes": "International Short Card"
+  },
+  {
+    "id": "hw-1770432928129-19",
+    "name": "'20 Jeep Gladiator",
+    "series": "Truckin Along",
+    "year": "2026",
+    "color": "Lime",
+    "manufacturer": "Mattel",
+    "category": "Truckin Along",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/d16bdf1d-a664-4c98-add6-630863947022_small.jpg",
+    "notes": "USA Card"
+  },
+  {
+    "id": "hw-1770432928129-20",
+    "name": "'20 Toyota GR Supra",
+    "series": "Then And Now",
+    "year": "2026",
+    "color": "Silver",
+    "manufacturer": "Mattel",
+    "category": "Then And Now",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/d2b766c8-4028-480d-b2dd-414c8134e185_small.jpg",
+    "notes": "International Short Card"
+  },
+  {
+    "id": "hw-1770432928129-21",
+    "name": "'20 Toyota GR Supra & Fleet Street",
+    "series": "Car Culture - Team Transport",
+    "year": "2026",
+    "color": "Yellow",
+    "manufacturer": "Mattel",
+    "category": "Car Culture - Team Transport",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/0070f4a8-68c8-47be-bcd2-ead343c09aae_small.png",
+    "notes": "Detailed headlights and taillights, Papadakis Racing Livery, Various Sponsor Decals"
+  },
+  {
+    "id": "hw-1770432928129-22",
+    "name": "'24 Honda Civic Type-R & Kousoku Hauler",
+    "series": "Car Culture - Team Transport",
+    "year": "2026",
+    "color": "White",
+    "manufacturer": "Mattel",
+    "category": "Car Culture - Team Transport",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/1768c1f4-dd60-4ca7-b136-bef50e8ac5e8_small.png",
+    "notes": "2026 Legends Tour Team Transport - Walmart Exclusive"
+  },
+  {
+    "id": "hw-1770432928129-23",
+    "name": "'24 Jeep Gladiator",
+    "series": "Elite 64 Mod Shop",
+    "year": "2026",
+    "color": "Cool gray",
+    "manufacturer": "Mattel",
+    "category": "Elite 64 Mod Shop",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/003a2f35-8d65-4475-94f4-d0d035a7a8c2_small.png",
+    "notes": "Features 20+ accessories for car customization"
+  },
+  {
+    "id": "hw-1770432928129-24",
+    "name": "'32 Ford",
+    "series": "The Hot Ones",
+    "year": "2026",
+    "color": "Pink",
+    "manufacturer": "Mattel",
+    "category": "The Hot Ones",
+    "imageUrl": "https://s3-us-west-2.amazonaws.com/images.collecthw.com/6c33abd2-98be-4bf2-ad73-8bffae0341c5_small.jpg",
+    "notes": "yellow blue"
+  }
+];
+
+        function App() {
+            const [activeTab, setActiveTab] = useState('collection');
+            const [ownedCars, setOwnedCars] = useState([]);
+            const [formData, setFormData] = useState({
+                name: '',
+                series: '',
+                year: '',
+                color: '',
+                manufacturer: '',
+                notes: '',
+                category: '',
+                image: null,
+                imagePreview: null
+            });
+            const [searchTerm, setSearchTerm] = useState('');
+            const [filterSeries, setFilterSeries] = useState('');
+            const [filterCategory, setFilterCategory] = useState('');
+            const [editingId, setEditingId] = useState(null);
+            const [showOnlyOwned, setShowOnlyOwned] = useState(false);
+
+            // Load owned cars from localStorage on mount
+            useEffect(() => {
+                const savedCars = localStorage.getItem('hotwheelsOwnedCars');
+                if (savedCars) {
+                    setOwnedCars(JSON.parse(savedCars));
+                }
+            }, []);
+
+            // Save owned cars to localStorage whenever they change
+            useEffect(() => {
+                localStorage.setItem('hotwheelsOwnedCars', JSON.stringify(ownedCars));
+            }, [ownedCars]);
+
+            const handleInputChange = (e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({
+                    ...prev,
+                    [name]: value
+                }));
+            };
+
+            const handleImageChange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        setFormData(prev => ({
+                            ...prev,
+                            image: reader.result,
+                            imagePreview: reader.result
+                        }));
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+
+                if (!formData.name) {
+                    alert('Please enter a car name!');
+                    return;
+                }
+
+                if (editingId !== null) {
+                    // Update existing car
+                    setOwnedCars(prev => prev.map(car =>
+                        car.id === editingId
+                            ? { ...formData, id: editingId }
+                            : car
+                    ));
+                    setEditingId(null);
+                } else {
+                    // Add new car
+                    const newCar = {
+                        ...formData,
+                        id: 'user-' + Date.now(),
+                        isCustom: true
+                    };
+                    setOwnedCars(prev => [...prev, newCar]);
+                }
+
+                // Reset form
+                resetForm();
+            };
+
+            const resetForm = () => {
+                setFormData({
+                    name: '',
+                    series: '',
+                    year: '',
+                    color: '',
+                    manufacturer: '',
+                    notes: '',
+                    category: '',
+                    image: null,
+                    imagePreview: null
+                });
+            };
+
+            const handleEdit = (car) => {
+                setFormData({
+                    name: car.name,
+                    series: car.series || '',
+                    year: car.year || '',
+                    color: car.color || '',
+                    manufacturer: car.manufacturer || '',
+                    notes: car.notes || '',
+                    category: car.category || '',
+                    image: car.image || car.imageUrl || null,
+                    imagePreview: car.image || car.imageUrl || null
+                });
+                setEditingId(car.id);
+                setActiveTab('add');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+
+            const handleDelete = (id) => {
+                if (window.confirm('Remove this car from your collection?')) {
+                    setOwnedCars(prev => prev.filter(car => car.id !== id));
+                }
+            };
+
+            const handleAddFromDatabase = (dbCar) => {
+                // Check if already owned
+                const alreadyOwned = ownedCars.some(car => car.id === dbCar.id);
+                if (alreadyOwned) {
+                    alert('You already own this car!');
+                    return;
+                }
+
+                // Add to owned collection
+                const newCar = {
+                    ...dbCar,
+                    image: dbCar.imageUrl,
+                    isCustom: false
+                };
+                setOwnedCars(prev => [...prev, newCar]);
+            };
+
+            const cancelEdit = () => {
+                setEditingId(null);
+                resetForm();
+            };
+
+            const isCarOwned = (carId) => {
+                return ownedCars.some(car => car.id === carId);
+            };
+
+            // Filter cars for database view
+            const filteredDatabaseCars = SAMPLE_DATABASE.filter(car => {
+                const matchesSearch = car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (car.series && car.series.toLowerCase().includes(searchTerm.toLowerCase()));
+                const matchesSeries = !filterSeries || car.series === filterSeries;
+                const matchesCategory = !filterCategory || car.category === filterCategory;
+                const matchesOwned = !showOnlyOwned || isCarOwned(car.id);
+                return matchesSearch && matchesSeries && matchesCategory && matchesOwned;
+            });
+
+            // Filter owned cars
+            const filteredOwnedCars = ownedCars.filter(car => {
+                const matchesSearch = car.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    (car.series && car.series.toLowerCase().includes(searchTerm.toLowerCase()));
+                const matchesSeries = !filterSeries || car.series === filterSeries;
+                const matchesCategory = !filterCategory || car.category === filterCategory;
+                return matchesSearch && matchesSeries && matchesCategory;
+            });
+
+            // Get unique series and categories
+            const allCars = [...SAMPLE_DATABASE, ...ownedCars.filter(car => car.isCustom)];
+            const uniqueSeries = [...new Set(allCars.map(car => car.series).filter(Boolean))];
+            const uniqueCategories = [...new Set(allCars.map(car => car.category).filter(Boolean))];
+
+            const renderCarCard = (car, isOwned = false, showActions = true) => (
+                <div key={car.id} className="car-card">
+                    {isOwned && <div className="owned-badge">OWNED</div>}
+                    <div className="car-image-container">
+                        {(car.image || car.imageUrl) ? (
+                            <img src={car.image || car.imageUrl} alt={car.name} className="car-image" />
+                        ) : (
+                            <div style={{ fontSize: '5rem', opacity: 0.3 }}>🏎️</div>
+                        )}
+                    </div>
+
+                    <div className="car-info">
+                        <h3 className="car-name">{car.name}</h3>
+                        {car.series && <div className="car-series">{car.series}</div>}
+
+                        <div className="car-details">
+                            {car.year && (
+                                <div className="car-detail-item">
+                                    <span className="car-detail-label">Year</span>
+                                    <span className="car-detail-value">{car.year}</span>
+                                </div>
+                            )}
+                            {car.color && (
+                                <div className="car-detail-item">
+                                    <span className="car-detail-label">Color</span>
+                                    <span className="car-detail-value">{car.color}</span>
+                                </div>
+                            )}
+                            {car.category && (
+                                <div className="car-detail-item">
+                                    <span className="car-detail-label">Category</span>
+                                    <span className="car-detail-value">{car.category}</span>
+                                </div>
+                            )}
+                            {car.manufacturer && (
+                                <div className="car-detail-item">
+                                    <span className="car-detail-label">Manufacturer</span>
+                                    <span className="car-detail-value">{car.manufacturer}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {car.notes && (
+                            <div className="car-notes">{car.notes}</div>
+                        )}
+
+                        {showActions && (
+                            <div className="card-actions">
+                                {isOwned ? (
+                                    <>
+                                        <button
+                                            className="btn-small btn-edit"
+                                            onClick={() => handleEdit(car)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className="btn-small btn-delete"
+                                            onClick={() => handleDelete(car.id)}
+                                        >
+                                            Remove
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        className="btn-small btn-add"
+                                        onClick={() => handleAddFromDatabase(car)}
+                                    >
+                                        Add to Collection
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="app-container">
+                    <header>
+                        <h1>🏁 Hot Wheels Collection 🏁</h1>
+                        <div className="tagline">Racing Into Your Database</div>
+                    </header>
+
+                    <div className="stats-bar">
+                        <div className="stat-item">
+                            <div className="stat-value">{ownedCars.length}</div>
+                            <div className="stat-label">Cars Owned</div>
+                        </div>
+                        <div className="stat-item">
+                            <div className="stat-value">{SAMPLE_DATABASE.length}</div>
+                            <div className="stat-label">Database Cars</div>
+                        </div>
+                        <div className="stat-item">
+                            <div className="stat-value">
+                                {uniqueSeries.length}
+                            </div>
+                            <div className="stat-label">Series</div>
+                        </div>
+                    </div>
+
+                    <div className="tab-navigation">
+                        <button
+                            className={`tab-button ${activeTab === 'collection' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('collection')}
+                        >
+                            My Collection
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'database' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('database')}
+                        >
+                            Browse Database
+                        </button>
+                        <button
+                            className={`tab-button ${activeTab === 'add' ? 'active' : ''}`}
+                            onClick={() => setActiveTab('add')}
+                        >
+                            Add Custom Car
+                        </button>
+                    </div>
+
+                    {activeTab === 'add' && (
+                        <div className="section-container">
+                            <h2 style={{ fontFamily: "'Righteous', sans-serif", fontSize: '2rem', marginBottom: '1.5rem', color: 'var(--speed-yellow)' }}>
+                                {editingId !== null ? '✏️ Edit Car' : '➕ Add Custom Car'}
+                            </h2>
+
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-grid">
+                                    <div className="form-group">
+                                        <label>Car Name *</label>
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., '69 Dodge Charger"
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Series</label>
+                                        <input
+                                            type="text"
+                                            name="series"
+                                            value={formData.series}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., HW Speed Graphics"
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Year</label>
+                                        <input
+                                            type="text"
+                                            name="year"
+                                            value={formData.year}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., 2024"
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Color</label>
+                                        <input
+                                            type="text"
+                                            name="color"
+                                            value={formData.color}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., Orange"
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Category</label>
+                                        <input
+                                            type="text"
+                                            name="category"
+                                            value={formData.category}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., Muscle Cars"
+                                        />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Manufacturer</label>
+                                        <input
+                                            type="text"
+                                            name="manufacturer"
+                                            value={formData.manufacturer}
+                                            onChange={handleInputChange}
+                                            placeholder="e.g., Mattel"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="form-group" style={{ marginBottom: '1.5rem' }}>
+                                    <label>Notes</label>
+                                    <textarea
+                                        name="notes"
+                                        value={formData.notes}
+                                        onChange={handleInputChange}
+                                        placeholder="Any special details about this car..."
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label>Car Image</label>
+                                    <div className="image-upload">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleImageChange}
+                                        />
+                                        {formData.imagePreview ? (
+                                            <img src={formData.imagePreview} alt="Preview" className="image-preview" />
+                                        ) : (
+                                            <div>
+                                                <div style={{ fontSize: '3rem', marginBottom: '0.5rem' }}>📸</div>
+                                                <div>Click to upload car image</div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                                    <button type="submit" className="btn">
+                                        <span>{editingId !== null ? 'Update Car' : 'Add to Collection'}</span>
+                                    </button>
+                                    {editingId !== null && (
+                                        <button
+                                            type="button"
+                                            className="btn"
+                                            onClick={cancelEdit}
+                                            style={{ background: 'linear-gradient(135deg, #666 0%, #444 100%)' }}
+                                        >
+                                            <span>Cancel</span>
+                                        </button>
+                                    )}
+                                </div>
+                            </form>
+                        </div>
+                    )}
+
+                    {(activeTab === 'collection' || activeTab === 'database') && (
+                        <>
+                            <div className="search-filter-section">
+                                <div className="search-bar">
+                                    <input
+                                        type="text"
+                                        placeholder="🔍 Search cars..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                    <select
+                                        value={filterSeries}
+                                        onChange={(e) => setFilterSeries(e.target.value)}
+                                    >
+                                        <option value="">All Series</option>
+                                        {uniqueSeries.map(series => (
+                                            <option key={series} value={series}>{series}</option>
+                                        ))}
+                                    </select>
+                                    <select
+                                        value={filterCategory}
+                                        onChange={(e) => setFilterCategory(e.target.value)}
+                                    >
+                                        <option value="">All Categories</option>
+                                        {uniqueCategories.map(category => (
+                                            <option key={category} value={category}>{category}</option>
+                                        ))}
+                                    </select>
+                                    {activeTab === 'database' && (
+                                        <label style={{ display: 'flex', alignItems: 'center', gap: '0.8rem', padding: '0.8rem', background: 'rgba(26, 26, 26, 0.8)', borderRadius: '8px', border: '2px solid rgba(255, 255, 255, 0.1)', minWidth: '200px' }}>
+                                            <span>Show Only Owned</span>
+                                            <label className="toggle-checkbox">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={showOnlyOwned}
+                                                    onChange={(e) => setShowOnlyOwned(e.target.checked)}
+                                                />
+                                                <span className="toggle-slider"></span>
+                                            </label>
+                                        </label>
+                                    )}
+                                </div>
+                            </div>
+
+                            {activeTab === 'collection' && (
+                                filteredOwnedCars.length === 0 ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-icon">🏎️</div>
+                                        <h2 style={{ fontFamily: "'Righteous', sans-serif", fontSize: '1.8rem', marginBottom: '0.5rem' }}>
+                                            {ownedCars.length === 0 ? 'No Cars Yet!' : 'No Matching Cars'}
+                                        </h2>
+                                        <p>{ownedCars.length === 0 ? 'Browse the database or add custom cars to start your collection!' : 'Try adjusting your search filters.'}</p>
+                                    </div>
+                                ) : (
+                                    <div className="collection-grid">
+                                        {filteredOwnedCars.map(car => renderCarCard(car, true))}
+                                    </div>
+                                )
+                            )}
+
+                            {activeTab === 'database' && (
+                                filteredDatabaseCars.length === 0 ? (
+                                    <div className="empty-state">
+                                        <div className="empty-state-icon">🔍</div>
+                                        <h2 style={{ fontFamily: "'Righteous', sans-serif", fontSize: '1.8rem', marginBottom: '0.5rem' }}>
+                                            No Matching Cars
+                                        </h2>
+                                        <p>Try adjusting your search filters.</p>
+                                    </div>
+                                ) : (
+                                    <div className="collection-grid">
+                                        {filteredDatabaseCars.map(car => renderCarCard(car, isCarOwned(car.id), true))}
+                                    </div>
+                                )
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+
+</html>

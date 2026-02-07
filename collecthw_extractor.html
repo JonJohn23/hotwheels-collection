@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CollectHW Data Extractor - Setup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: white;
+            color: #333;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 1rem;
+        }
+        h2 {
+            color: #764ba2;
+            margin-top: 2rem;
+        }
+        .bookmarklet {
+            background: #f7f7f7;
+            border: 2px dashed #667eea;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+        .bookmarklet a {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin: 1rem;
+            transition: transform 0.2s;
+        }
+        .bookmarklet a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        .step {
+            background: #f0f4ff;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+        }
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+        code {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .warning {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        .button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        .button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏎️ CollectHW Data Extractor</h1>
+        <p>Since collecthw.com blocks automated scraping, use this bookmarklet to extract car data while you browse the site manually.</p>
+
+        <h2>📖 How It Works</h2>
+        <div class="step">
+            <span class="step-number">1</span>
+            Drag the bookmarklet button below to your browser's bookmarks bar
+        </div>
+        <div class="step">
+            <span class="step-number">2</span>
+            Visit collecthw.com and browse any page with cars
+        </div>
+        <div class="step">
+            <span class="step-number">3</span>
+            Click the bookmarklet in your bookmarks bar
+        </div>
+        <div class="step">
+            <span class="step-number">4</span>
+            Car data will be extracted and copied to your clipboard
+        </div>
+        <div class="step">
+            <span class="step-number">5</span>
+            Paste into the text area below and click "Download as JavaScript"
+        </div>
+
+        <h2>🔖 Drag This to Your Bookmarks Bar</h2>
+        <div class="warning">
+            <strong>⚠️ Important:</strong> You must drag this link to your bookmarks bar (the bar at the top of your browser). Don't just click it!
+        </div>
+        
+        <div class="bookmarklet">
+            <a href="javascript:(function()%7Blet%20cars%3D%5B%5D%3Blet%20extractFromCollectHW%3Dfunction()%7Bdocument.querySelectorAll('%5Bclass*%3D%22car%22%5D%2C%5Bclass*%3D%22item%22%5D%2C%5Bclass*%3D%22product%22%5D').forEach(function(el)%7Blet%20img%3Del.querySelector('img')%3Blet%20name%3Del.querySelector('h1%2Ch2%2Ch3%2Ch4%2C.title%2C.name%2C%5Bclass*%3D%22title%22%5D%2C%5Bclass*%3D%22name%22%5D')%3Bif(name)%7Blet%20car%3D%7Bid%3A'hw-'%2BDate.now()%2BMath.random().toString(36).substr(2%2C9)%2Cname%3Aname.textContent.trim()%2Cseries%3A''%2Cyear%3A''%2Ccolor%3A''%2Cmanufacturer%3A'Mattel'%2Ccategory%3A''%2CimageUrl%3Aimg%3Fimg.src%3A''%2Cnotes%3A''%7D%3Blet%20details%3Del.innerText%3Blet%20yearMatch%3Ddetails.match(%2F(19%7C20)%5Cd%7B2%7D%2F)%3Bif(yearMatch)car.year%3DyearMatch%5B0%5D%3Bcars.push(car)%3B%7D%7D)%3B%7D%3BextractFromCollectHW()%3Bif(cars.length%3D%3D%3D0)%7Balert('No%20cars%20found%20on%20this%20page!%5CnMake%20sure%20you%5C're%20on%20a%20page%20with%20Hot%20Wheels%20listings.')%3Breturn%3B%7Dlet%20output%3DJSON.stringify(cars%2Cnull%2C2)%3Bnavigator.clipboard.writeText(output).then(function()%7Balert('Extracted%20'%2Bcars.length%2B'%20cars!%5Cn%5CnData%20copied%20to%20clipboard.%5CnPaste%20it%20into%20the%20text%20area%20on%20the%20extractor%20page.')%3B%7D).catch(function()%7Blet%20w%3Dwindow.open(''%2C'_blank')%3Bw.document.write('%3Cpre%3E'%2Boutput%2B'%3C%2Fpre%3E')%3B%7D)%3B%7D)()%3B">
+                🏎️ Extract Hot Wheels
+            </a>
+            <p style="color: #666; margin-top: 1rem;">← Drag this button to your bookmarks bar</p>
+        </div>
+
+        <h2>📋 Paste Extracted Data Here</h2>
+        <p>After clicking the bookmarklet on collecthw.com, paste the extracted data here:</p>
+        <textarea id="extractedData" placeholder='Paste your JSON data here...
+
+It should look like:
+[
+  {
+    "id": "hw-123",
+    "name": "Car Name",
+    "series": "Series Name",
+    ...
+  }
+]'></textarea>
+        
+        <button class="button" onclick="convertToJS()">📥 Download as JavaScript for Your App</button>
+        
+        <div id="status"></div>
+
+        <h2>🎯 Alternative: Manual Browser Console Method</h2>
+        <div class="step">
+            <p>If the bookmarklet doesn't work, you can also:</p>
+            <ol>
+                <li>Go to collecthw.com</li>
+                <li>Press <code>F12</code> to open Developer Tools</li>
+                <li>Go to the "Console" tab</li>
+                <li>Copy and paste the code below</li>
+                <li>Press Enter</li>
+            </ol>
+        </div>
+
+        <details>
+            <summary style="cursor: pointer; color: #667eea; font-weight: bold; padding: 1rem 0;">Click to show console code</summary>
+            <textarea readonly>// CollectHW Data Extractor - Paste this in the browser console
+let cars = [];
+
+// Extract car data from the page
+document.querySelectorAll('[class*="car"],[class*="item"],[class*="product"]').forEach(el => {
+    let img = el.querySelector('img');
+    let name = el.querySelector('h1,h2,h3,h4,.title,.name,[class*="title"],[class*="name"]');
+    
+    if (name) {
+        let car = {
+            id: 'hw-' + Date.now() + Math.random().toString(36).substr(2, 9),
+            name: name.textContent.trim(),
+            series: '',
+            year: '',
+            color: '',
+            manufacturer: 'Mattel',
+            category: '',
+            imageUrl: img ? img.src : '',
+            notes: ''
+        };
+        
+        // Try to extract year
+        let details = el.innerText;
+        let yearMatch = details.match(/(19|20)\d{2}/);
+        if (yearMatch) car.year = yearMatch[0];
+        
+        cars.push(car);
+    }
+});
+
+// Copy to clipboard
+console.log('Extracted ' + cars.length + ' cars:');
+console.log(JSON.stringify(cars, null, 2));
+copy(JSON.stringify(cars, null, 2));
+alert('Extracted ' + cars.length + ' cars!\n\nData copied to clipboard.');
+</textarea>
+        </details>
+
+        <h2>💡 Tips</h2>
+        <ul>
+            <li><strong>Browse multiple pages:</strong> Extract data from each page and combine them</li>
+            <li><strong>Check the data:</strong> You may need to manually fill in missing series/color info</li>
+            <li><strong>Use filters:</strong> On collecthw.com, use their filters to find specific series/years</li>
+            <li><strong>Images:</strong> The extractor will grab image URLs from the page</li>
+        </ul>
+
+    </div>
+
+    <script>
+        function convertToJS() {
+            const data = document.getElementById('extractedData').value;
+            const status = document.getElementById('status');
+            
+            if (!data.trim()) {
+                status.innerHTML = '<div class="warning">⚠️ Please paste some data first!</div>';
+                return;
+            }
+            
+            try {
+                // Parse to validate JSON
+                const cars = JSON.parse(data);
+                
+                if (!Array.isArray(cars)) {
+                    throw new Error('Data must be an array');
+                }
+                
+                // Generate JavaScript file
+                const jsContent = `// Hot Wheels Database from CollectHW
+// Generated: ${new Date().toLocaleString()}
+// Total cars: ${cars.length}
+
+const SAMPLE_DATABASE = ${JSON.stringify(cars, null, 2)};
+
+// Instructions:
+// 1. Open hotwheels-collection-enhanced.html in a text editor
+// 2. Find the line: const SAMPLE_DATABASE = [
+// 3. Replace the entire SAMPLE_DATABASE array with this one
+// 4. Save and open in your browser!
+`;
+                
+                // Download file
+                const blob = new Blob([jsContent], { type: 'text/javascript' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'hotwheels_database.js';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                status.innerHTML = `<div class="success">
+                    ✅ Success! Downloaded database with ${cars.length} cars!<br><br>
+                    <strong>Next steps:</strong><br>
+                    1. Open hotwheels-collection-enhanced.html in Notepad<br>
+                    2. Find "const SAMPLE_DATABASE = ["<br>
+                    3. Replace it with the contents of hotwheels_database.js<br>
+                    4. Save and enjoy your collection!
+                </div>`;
+                
+            } catch (e) {
+                status.innerHTML = `<div class="warning">❌ Error: Invalid JSON data. Make sure you pasted the correct format.<br><br>Error: ${e.message}</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
